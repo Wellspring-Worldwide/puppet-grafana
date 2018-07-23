@@ -24,7 +24,8 @@ Puppet::Type.newtype(:grafana_dashboard) do
 
     munge do |value|
       new_value = JSON.parse(value).reject { |k, _| k =~ %r{^id|version|title$} }
-      new_value.sort.to_h
+      # This is a fix for the missing to_h method introduced in Ruby 2.1.0
+      Hash[new_value.map {|key, value| [key, value]}]
     end
 
     def should_to_s(value)
